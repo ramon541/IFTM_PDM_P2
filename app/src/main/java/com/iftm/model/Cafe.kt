@@ -1,4 +1,4 @@
-package com.iftm
+package com.iftm.model
 
 class Cafe (
       codigo  : String

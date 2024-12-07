@@ -1,6 +1,5 @@
 package com.iftm.ui.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
@@ -12,15 +11,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Blue80,
-    secondary = BlueGrey80,
-    tertiary = LightBlue80
+    primary = Blue,
+    secondary = DarkBlue,
+    tertiary = Gray
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Blue40,
-    secondary = BlueGrey40,
-    tertiary = LightBlue40
+    primary = Blue,
+    secondary = DarkBlue,
+    tertiary = Gray
 
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
