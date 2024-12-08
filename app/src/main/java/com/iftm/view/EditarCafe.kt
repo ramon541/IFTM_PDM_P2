@@ -1,6 +1,7 @@
 package com.iftm.view
 
 import android.annotation.SuppressLint
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,6 +20,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
@@ -44,7 +46,7 @@ import com.iftm.ui.theme.White
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun SalvarCafe(navController: NavController) {
+fun EditarCafe(navController: NavController, cafe: Cafe) {
     val context = LocalContext.current
 
     val banco: DatabaseReference = Firebase.database.reference
@@ -53,34 +55,23 @@ fun SalvarCafe(navController: NavController) {
     val notas      = listOf("Doce", "Floral", "Frutado", "Especiarias")
     val avaliacoes = listOf("1", "2", "3", "4", "5")
 
-    var codigo  by remember { mutableStateOf("") }
-    var nome    by remember { mutableStateOf("") }
-    var nota    by remember { mutableStateOf(notas[0]) }
-    var aroma   by remember { mutableStateOf(avaliacoes[4]) }
-    var acidez  by remember { mutableStateOf(avaliacoes[4]) }
-    var amargor by remember { mutableStateOf(avaliacoes[4]) }
-    var sabor   by remember { mutableStateOf(avaliacoes[4]) }
-    var preco   by remember { mutableStateOf("") }
-
-    //---------------- Functions ----------------
-    fun clearFields() {
-        codigo  = ""
-        nome    = ""
-        nota    = notas[0]
-        aroma   = avaliacoes[4]
-        acidez  = avaliacoes[4]
-        amargor = avaliacoes[4]
-        sabor   = avaliacoes[4]
-        preco   = ""
-    }
+    var codigo  by remember { mutableStateOf(cafe.codigo) }
+    var nome    by remember { mutableStateOf(cafe.nome) }
+    var nota    by remember { mutableStateOf(notas[notas.indexOf(cafe.nota)]) }
+    var aroma   by remember { mutableStateOf(avaliacoes[avaliacoes.indexOf(cafe.aroma.toString())]) }
+    var acidez  by remember { mutableStateOf(avaliacoes[avaliacoes.indexOf(cafe.acidez.toString())]) }
+    var amargor by remember { mutableStateOf(avaliacoes[avaliacoes.indexOf(cafe.amargor.toString())]) }
+    var sabor   by remember { mutableStateOf(avaliacoes[avaliacoes.indexOf(cafe.sabor.toString())]) }
+    var preco   by remember { mutableStateOf(cafe.preco.toString()) }
 
     //---------------- Component ----------------
+
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
                     Text(
-                        "Salvar Café",
+                        "Editar Café",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -108,7 +99,7 @@ fun SalvarCafe(navController: NavController) {
                 .verticalScroll(rememberScrollState())
         ) {
             InputText(
-                value = codigo,
+                value = codigo.toString(),
                 onValueChange = {
                     codigo = it
                 },
@@ -116,11 +107,12 @@ fun SalvarCafe(navController: NavController) {
                     .fillMaxWidth()
                     .padding(20.dp, 20.dp, 20.dp, 10.dp),
                 label = "Código",
-                maxLines = 1
+                maxLines = 1,
+                enabled = false
             )
 
             InputText(
-                value = nome,
+                value = nome.toString(),
                 onValueChange = {
                     nome = it
                 },
@@ -191,17 +183,16 @@ fun SalvarCafe(navController: NavController) {
 
             TextButton(
                 onClick = {
-                    var cafe = Cafe(codigo, nome, nota, aroma.toInt(), acidez.toInt(), amargor.toInt(), sabor.toInt(), preco.toDouble())
+                    val cafe = Cafe(codigo.toString(), nome.toString(), nota, aroma.toInt(), acidez.toInt(), amargor.toInt(), sabor.toInt(), preco.toDouble())
                     dao.saveOrUpdate(cafe)
 
-                    clearFields()
-                    Toast.makeText(context, "Café salvo com sucesso!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Café editado com sucesso!", Toast.LENGTH_SHORT).show()
                 },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(80.dp)
                     .padding(20.dp),
-                text = "Adicionar"
+                text = "Salvar"
             )
         }
     }

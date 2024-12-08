@@ -1,6 +1,12 @@
 package com.iftm
 
+import android.renderscript.Sampler.Value
 import android.util.Log
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -25,26 +31,36 @@ class DAO(banco: DatabaseReference) {
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.exists()) {
                     val gson = Gson()
-                    Log.i("TESTE", "------")
                     for (i in snapshot.children) {
                         val json = gson.toJson(i.value)
                         val cafe = gson.fromJson(json, Cafe::class.java)
                         listaCafes.add(cafe)
-                        //Log.i("TESTE", "Fazenda: " + fazenda.toString())
                     }
-                    Log.i("TESTE", "------")
                     callback(listaCafes)
                 }
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Log.i("ERRO DAO getData", "Erro: $error")
+                Log.i("ERROR DAO getData", "Erro: $error")
             }
         })
     }
 
-    fun findById(codigo : String) {
+    fun findById(codigo: String, callback: (Cafe?) -> Unit) {
+        this.banco.child(codigo).addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if(snapshot.exists()) {
+                    val gson = Gson()
+                    val json = gson.toJson(snapshot.value)
+                    val cafe = gson.fromJson(json, Cafe::class.java)
+                    callback(cafe)
+                }
+            }
 
+            override fun onCancelled(error: DatabaseError) {
+                Log.i("ERROR DAO findById", "Erro: $error")
+            }
+        })
     }
 
     fun delete(codigo : String) {

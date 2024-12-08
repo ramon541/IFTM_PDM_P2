@@ -1,8 +1,10 @@
 package com.iftm.view
 
 import android.annotation.SuppressLint
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -22,6 +24,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.iftm.components.ItemCard
@@ -33,6 +37,8 @@ import com.google.firebase.database.database
 import com.iftm.DAO
 
 import com.iftm.ui.theme.White
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -40,7 +46,7 @@ import com.iftm.ui.theme.White
 fun ListaCafes(navController: NavController) {
     val context = LocalContext.current
 
-    var listCafes = remember { mutableStateOf<List<Cafe>>(emptyList()) }
+    val listCafes = remember { mutableStateOf<List<Cafe>>(emptyList()) }
 
     val banco: DatabaseReference = Firebase.database.reference
     val dao = DAO(banco)
@@ -49,6 +55,7 @@ fun ListaCafes(navController: NavController) {
     fun reloadCafes() {
         dao.getData { list ->
             listCafes.value = list
+            Log.i("@@@@@@@@@@", list.size.toString())
         }
     }
 
@@ -89,16 +96,30 @@ fun ListaCafes(navController: NavController) {
                 .padding(contentPadding)
                 .verticalScroll(rememberScrollState())
         ) {
-            for (cafe in listCafes.value) {
-                ItemCard(
-                    cafe,
-                    onEdit = { Toast.makeText(context, "Cricou no editar", Toast.LENGTH_SHORT).show() },
-                    onDelete = {
-                        dao.delete(cafe.codigo)
-                        Toast.makeText(context, "Café ${cafe.nome} deletado!", Toast.LENGTH_SHORT).show()
-                        reloadCafes()
-                    }
+            if (listCafes.value.isEmpty()) {
+                Text(
+                    text = "Nenhum café cadastrado.",
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .fillMaxHeight()
+                        .padding(16.dp),
+                    textAlign = TextAlign.Center,
                 )
+            } else {
+                for (cafe in listCafes.value) {
+                    ItemCard(
+                        cafe,
+                        onEdit = {
+                            val cafeJson = Json.encodeToString(cafe)
+                            navController.navigate("editarCafe/$cafeJson")
+                        },
+                        onDelete = {
+                            dao.delete(cafe.codigo)
+                            Toast.makeText(context, "Café ${cafe.nome} deletado!", Toast.LENGTH_SHORT).show()
+                            reloadCafes()
+                        }
+                    )
+                }
             }
         }
     }
