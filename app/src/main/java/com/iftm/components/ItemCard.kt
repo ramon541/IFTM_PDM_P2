@@ -45,7 +45,6 @@ fun ItemCard(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    //.padding(0.dp, 15.dp),
             ) {
                 Column(
                     modifier = Modifier

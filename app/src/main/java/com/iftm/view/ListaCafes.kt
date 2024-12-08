@@ -1,16 +1,22 @@
 package com.iftm.view
 
 import android.annotation.SuppressLint
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -35,6 +41,8 @@ import com.google.firebase.Firebase
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.database
 import com.iftm.DAO
+import com.iftm.components.DataText
+import com.iftm.components.TextButton
 
 import com.iftm.ui.theme.White
 import kotlinx.serialization.encodeToString
@@ -47,6 +55,8 @@ fun ListaCafes(navController: NavController) {
     val context = LocalContext.current
 
     val listCafes = remember { mutableStateOf<List<Cafe>>(emptyList()) }
+    val totCafes = remember { mutableStateOf(0) }
+    val precoMedio = remember { mutableStateOf(0.0) }
 
     val banco: DatabaseReference = Firebase.database.reference
     val dao = DAO(banco)
@@ -55,9 +65,15 @@ fun ListaCafes(navController: NavController) {
     fun reloadCafes() {
         dao.getData { list ->
             listCafes.value = list
-            Log.i("@@@@@@@@@@", list.size.toString())
+            totCafes.value = list.size
+            val sum = list.sumOf { it.preco }
+
+            if(list.size > 0)
+                precoMedio.value = (sum / list.size)
+            else
+                precoMedio.value = 0.0
+
         }
-        Log.i("@@@@@@@@@@", listCafes.value.size.toString())
     }
 
     reloadCafes()
@@ -97,6 +113,137 @@ fun ListaCafes(navController: NavController) {
                 .padding(contentPadding)
                 .verticalScroll(rememberScrollState())
         ) {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = White
+                ),
+                elevation = CardDefaults.cardElevation(
+                    defaultElevation = 5.dp
+                )
+            ) {
+                Column(
+                    modifier = Modifier
+                        .padding(10.dp)
+                ) {
+                    Text(
+                        "Mini Dashboard",
+                        textAlign = TextAlign.Center,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(0.dp, 0.dp, 0.dp, 10.dp)
+                    )
+                    DataText("Total de Cafés", totCafes.value.toString())
+                    DataText("Preço Médio", "R$ ${precoMedio.value}")
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    ) {
+                        TextButton(
+                            text = "Ordenar por Preço",
+                            onClick = {
+                                dao.orderByPreco { list ->
+                                    listCafes.value = list.asReversed()
+                                }
+                                Toast.makeText(context, "Ordenado do maior para o menor Preço!", Toast.LENGTH_SHORT).show()
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f),
+                            bgColor = Blue,
+                            fontSize = 14,
+                        )
+                        Spacer(
+                            modifier = Modifier
+                                .width(10.dp)
+                        )
+                        TextButton(
+                            text = "Ordenar por Sabor",
+                            onClick = {
+                                dao.orderBySabor { list ->
+                                    listCafes.value = list.asReversed()
+                                }
+                                Toast.makeText(context, "Ordenado do maior para o menor Sabor!", Toast.LENGTH_SHORT).show()
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f),
+                            bgColor = Blue,
+                            fontSize = 14,
+                        )
+                    }
+                    Spacer(
+                        modifier = Modifier
+                            .height(10.dp)
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    ) {
+                        TextButton(
+                            text = "Ordenar por Aroma",
+                            onClick = {
+                                dao.orderByAroma { list ->
+                                    listCafes.value = list.asReversed()
+                                }
+                                Toast.makeText(context, "Ordenado do maior para o menor Aroma!", Toast.LENGTH_SHORT).show()
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f),
+                            bgColor = Blue,
+                            fontSize = 14,
+                        )
+                        Spacer(
+                            modifier = Modifier
+                                .width(10.dp)
+                        )
+                        TextButton(
+                            text = "Ordenar por Acidez",
+                            onClick = {
+                                dao.orderByAcidez { list ->
+                                    listCafes.value = list
+                                }
+                                Toast.makeText(context, "Ordenado do menor para a maior Acidez!", Toast.LENGTH_SHORT).show()
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f),
+                            bgColor = Blue,
+                            fontSize = 14,
+                        )
+                    }
+                    Spacer(
+                        modifier = Modifier
+                            .height(10.dp)
+                    )
+                    TextButton(
+                        text = "Limpar filtros",
+                        onClick = {
+                            reloadCafes()
+                            Toast.makeText(context, "Filtragem original!", Toast.LENGTH_SHORT).show()
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        bgColor = Blue,
+                        fontSize = 14,
+                    )
+                }
+            }
+
+            Text(
+                text = "Cafés:",
+                fontWeight = FontWeight.Bold,
+                fontSize = 24.sp,
+                modifier = Modifier
+                    .padding(10.dp, 10.dp, 10.dp, 0.dp)
+            )
+
             if (listCafes.value.isEmpty()) {
                 Text(
                     text = "Nenhum café cadastrado.",

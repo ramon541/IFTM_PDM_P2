@@ -99,7 +99,7 @@ fun EditarCafe(navController: NavController, cafe: Cafe) {
                 .verticalScroll(rememberScrollState())
         ) {
             InputText(
-                value = codigo.toString(),
+                value = codigo,
                 onValueChange = {
                     codigo = it
                 },
@@ -112,7 +112,7 @@ fun EditarCafe(navController: NavController, cafe: Cafe) {
             )
 
             InputText(
-                value = nome.toString(),
+                value = nome,
                 onValueChange = {
                     nome = it
                 },
@@ -192,7 +192,9 @@ fun EditarCafe(navController: NavController, cafe: Cafe) {
                     .fillMaxWidth()
                     .height(80.dp)
                     .padding(20.dp),
-                text = "Salvar"
+                text = "Salvar",
+                bgColor = DarkBlue,
+                fontSize = 14
             )
         }
     }

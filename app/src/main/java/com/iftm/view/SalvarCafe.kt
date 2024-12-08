@@ -189,6 +189,7 @@ fun SalvarCafe(navController: NavController) {
                 keyboardType = KeyboardType.Number
             )
 
+
             TextButton(
                 onClick = {
                     var cafe = Cafe(codigo, nome, nota, aroma.toInt(), acidez.toInt(), amargor.toInt(), sabor.toInt(), preco.toDouble())
@@ -201,7 +202,9 @@ fun SalvarCafe(navController: NavController) {
                     .fillMaxWidth()
                     .height(80.dp)
                     .padding(20.dp),
-                text = "Adicionar"
+                text = "Adicionar",
+                bgColor = DarkBlue,
+                fontSize = 14,
             )
         }
     }
