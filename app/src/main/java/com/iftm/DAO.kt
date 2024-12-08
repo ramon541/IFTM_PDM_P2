@@ -36,8 +36,8 @@ class DAO(banco: DatabaseReference) {
                         val cafe = gson.fromJson(json, Cafe::class.java)
                         listaCafes.add(cafe)
                     }
-                    callback(listaCafes)
                 }
+                callback(listaCafes)
             }
 
             override fun onCancelled(error: DatabaseError) {

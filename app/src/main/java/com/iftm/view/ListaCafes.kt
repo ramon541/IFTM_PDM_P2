@@ -57,6 +57,7 @@ fun ListaCafes(navController: NavController) {
             listCafes.value = list
             Log.i("@@@@@@@@@@", list.size.toString())
         }
+        Log.i("@@@@@@@@@@", listCafes.value.size.toString())
     }
 
     reloadCafes()

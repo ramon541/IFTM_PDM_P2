@@ -1,5 +1,6 @@
 package com.iftm.components
 
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
@@ -44,6 +45,14 @@ fun InputText(
             disabledLabelColor = Gray,
         ),
         keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
+        keyboardActions = KeyboardActions(
+            onDone = { },
+            onGo = { },
+            onNext = { },
+            onPrevious = { },
+            onSearch = { },
+            onSend = { }
+        ),
         enabled = enabled,
     )
 }
