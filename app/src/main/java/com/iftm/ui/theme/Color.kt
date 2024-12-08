@@ -10,3 +10,4 @@ val Gray = Color(0xFFEAEAEA)
 
 val White = Color(0xFFFFFFFF)
 val Black = Color(0XFF00171F)
+val Red = Color(0xFFFF0000)

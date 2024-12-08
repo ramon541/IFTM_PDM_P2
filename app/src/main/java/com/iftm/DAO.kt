@@ -48,6 +48,6 @@ class DAO(banco: DatabaseReference) {
     }
 
     fun delete(codigo : String) {
-
+        this.banco.child(codigo).removeValue()
     }
 }

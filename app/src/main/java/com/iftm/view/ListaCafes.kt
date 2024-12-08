@@ -1,6 +1,7 @@
 package com.iftm.view
 
 import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -19,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -36,6 +38,8 @@ import com.iftm.ui.theme.White
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ListaCafes(navController: NavController) {
+    val context = LocalContext.current
+
     var listCafes = remember { mutableStateOf<List<Cafe>>(emptyList()) }
 
     val banco: DatabaseReference = Firebase.database.reference
@@ -86,7 +90,15 @@ fun ListaCafes(navController: NavController) {
                 .verticalScroll(rememberScrollState())
         ) {
             for (cafe in listCafes.value) {
-                ItemCard(cafe)
+                ItemCard(
+                    cafe,
+                    onEdit = { Toast.makeText(context, "Cricou no editar", Toast.LENGTH_SHORT).show() },
+                    onDelete = {
+                        dao.delete(cafe.codigo)
+                        Toast.makeText(context, "Café ${cafe.nome} deletado!", Toast.LENGTH_SHORT).show()
+                        reloadCafes()
+                    }
+                )
             }
         }
     }
