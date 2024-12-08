@@ -1,6 +1,7 @@
 package com.iftm.view
 
 import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,7 +23,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -30,21 +30,52 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.google.firebase.Firebase
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.database
+import com.iftm.DAO
 import com.iftm.components.DropdownMenu
 import com.iftm.components.InputText
 import com.iftm.components.TextButton
+import com.iftm.model.Cafe
 import com.iftm.ui.theme.DarkBlue
 import com.iftm.ui.theme.White
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun SalvarCafe(navController: NavController) {
-    val scope = rememberCoroutineScope()
     val context = LocalContext.current
 
+    val banco: DatabaseReference = Firebase.database.reference
+    val dao = DAO(banco)
+
+
+    val notas      = listOf("Doce", "Floral", "Frutado", "Especiarias")
+    val avaliacoes = listOf("1", "2", "3", "4", "5")
+
+    var codigo  by remember { mutableStateOf("") }
+    var nome    by remember { mutableStateOf("") }
+    var nota    by remember { mutableStateOf(notas[0]) }
+    var aroma   by remember { mutableStateOf(avaliacoes[4]) }
+    var acidez  by remember { mutableStateOf(avaliacoes[4]) }
+    var amargor by remember { mutableStateOf(avaliacoes[4]) }
+    var sabor   by remember { mutableStateOf(avaliacoes[4]) }
+    var preco   by remember { mutableStateOf("") }
+
+    //---------------- Functions ----------------
+    fun clearFields() {
+        codigo  = ""
+        nome    = ""
+        nota    = notas[0]
+        aroma   = avaliacoes[4]
+        acidez  = avaliacoes[4]
+        amargor = avaliacoes[4]
+        sabor   = avaliacoes[4]
+        preco   = ""
+    }
+
+    //---------------- Component ----------------
     Scaffold(
         topBar = {
             TopAppBar(
@@ -71,23 +102,24 @@ fun SalvarCafe(navController: NavController) {
             )
         }
     ) { contentPadding ->
-        val notas = listOf("Doce", "Floral", "Frutado", "Especiarias")
-        val avaliacoes = listOf("1", "2", "3", "4", "5")
-
-        var nome    by remember { mutableStateOf("") }
-        var nota    by remember { mutableStateOf(notas[0]) }
-        var aroma   by remember { mutableStateOf(avaliacoes[4]) }
-        var acidez  by remember { mutableStateOf(avaliacoes[4]) }
-        var amargor by remember { mutableStateOf(avaliacoes[4]) }
-        var sabor   by remember { mutableStateOf(avaliacoes[4]) }
-        var preco   by remember { mutableStateOf("") }
-        
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(contentPadding)
                 .verticalScroll(rememberScrollState())
         ) {
+            InputText(
+                value = codigo,
+                onValueChange = {
+                    codigo = it
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(20.dp, 20.dp, 20.dp, 10.dp),
+                label = "Código",
+                maxLines = 1
+            )
+
             InputText(
                 value = nome,
                 onValueChange = {
@@ -160,13 +192,17 @@ fun SalvarCafe(navController: NavController) {
 
             TextButton(
                 onClick = {
-                    scope.launch(Dispatchers.IO) {
-                        
-                    }
+                    var cafe = Cafe(codigo, nome, nota, aroma.toInt(), acidez.toInt(), amargor.toInt(), sabor.toInt(), preco.toDouble())
+                    dao.saveOrUpdate(cafe)
 
+                    clearFields()
+                    Toast.makeText(context, "Café salvo com sucesso!", Toast.LENGTH_SHORT).show()
                 },
-                modifier = Modifier.fillMaxWidth().height(80.dp).padding(20.dp),
-                text = "Salvar"
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(80.dp)
+                    .padding(20.dp),
+                text = "Adicionar"
             )
         }
     }

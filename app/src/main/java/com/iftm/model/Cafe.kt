@@ -8,16 +8,16 @@ class Cafe (
     , acidez  : Int
     , amargor : Int
     , sabor   : Int
-    , preco   : Float
+    , preco   : Double
 ){
-    var codigo  : String? = null
+    var codigo  : String
     var nome    : String
     var nota    : String
     var aroma   : Int
     var acidez  : Int
     var amargor : Int
     var sabor   : Int
-    var preco   : Float
+    var preco   : Double
 
     init {
         this.codigo  = codigo
@@ -29,4 +29,8 @@ class Cafe (
         this.sabor   = sabor
         this.preco   = preco
     }
+    override fun toString(): String {
+        return "Cafe(codigo='$codigo', nome='$nome', nota='$nota', aroma=$aroma, acidez=$acidez, amargor=$amargor, sabor=$sabor, preco=$preco)"
+    }
+
 }
