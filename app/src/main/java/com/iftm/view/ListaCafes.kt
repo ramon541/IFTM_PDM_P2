@@ -66,10 +66,9 @@ fun ListaCafes(navController: NavController) {
         dao.getData { list ->
             listCafes.value = list
             totCafes.value = list.size
-            val sum = list.sumOf { it.preco }
 
-            if(list.size > 0)
-                precoMedio.value = (sum / list.size)
+           if(list.size > 0)
+               precoMedio.value = listCafes.value.map { it.preco }.average()
             else
                 precoMedio.value = 0.0
 
@@ -138,7 +137,7 @@ fun ListaCafes(navController: NavController) {
                             .padding(0.dp, 0.dp, 0.dp, 10.dp)
                     )
                     DataText("Total de Cafés", totCafes.value.toString())
-                    DataText("Preço Médio", "R$ ${precoMedio.value}")
+                    DataText("Preço Médio", "R$ ${String.format("%.2f", precoMedio.value)}")
 
                     Row(
                         modifier = Modifier

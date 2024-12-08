@@ -65,7 +65,7 @@ fun ItemCard(
                 ) {
                     DataText("Amargor", cafe.amargor.toString())
                     DataText("Sabor", cafe.sabor.toString())
-                    DataText("Preço", "R$ ${cafe.preco}")
+                    DataText("Preço", "R$ ${String.format("%.2f", cafe.preco)}")
                 }
             }
             Row(
